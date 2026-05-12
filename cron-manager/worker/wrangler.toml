@@ -1,0 +1,15 @@
+name = "cron-executor"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[[triggers]]
+crons = ["* * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cron-manager-db"
+database_id = "your-db-id-here"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-id-here"

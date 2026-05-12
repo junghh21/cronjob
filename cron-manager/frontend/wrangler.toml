@@ -1,0 +1,16 @@
+name = "cron-hh"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-01-01"
+
+"d1_databases": [{
+    "binding": "DB",
+    "database_name": "cronjob",
+    "database_id": "0a4c1199-8aed-4d7c-bba6-16bf4af7d257"
+ }]
+
+"kv_namespaces": [
+  {
+    "binding": "KV",
+    "id": "05b1567a49c540838a157ee82785b2b1"    
+  }
+]

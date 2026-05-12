@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useJob, useJobActions } from '../hooks/useJobs';
-import cronstrue from 'cronstrue';
+import { toString as cronToString } from 'cronstrue';
 import type { HttpMethod } from '../types/cronjob';
 
 const METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'];

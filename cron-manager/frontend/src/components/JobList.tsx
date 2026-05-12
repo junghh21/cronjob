@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useJobs, useJobActions } from '../hooks/useJobs';
 import StatusBadge from './StatusBadge';
-import cronstrue from 'cronstrue';
+import { toString as cronToString } from 'cronstrue';
 
 export default function JobList() {
   const { jobs, isLoading } = useJobs();
@@ -29,7 +29,7 @@ export default function JobList() {
   };
 
   const scheduleLabel = (expr: string) => {
-    try { return cronstrue.toString(expr); } catch { return expr; }
+    try { return cronToString(expr); } catch { return expr; }
   };
 
   return (

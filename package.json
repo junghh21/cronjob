@@ -1,0 +1,8 @@
+{
+  "name": "cron-manager-root",
+  "private": true,
+  "scripts": {
+    "build": "cd cron-manager/frontend && npm install && npm run build",
+    "deploy": "cd cron-manager/frontend && npm run build && npx wrangler pages deploy dist --project-name cron-hh"
+  }
+}

@@ -64,7 +64,7 @@ export default function JobEditor() {
 
   useEffect(() => {
     try {
-      setScheduleLabel(cronstrue.toString(form.schedule));
+      setScheduleLabel(cronToString(form.schedule));
     } catch {
       setScheduleLabel('Invalid cron expression');
     }

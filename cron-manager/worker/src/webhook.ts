@@ -50,3 +50,11 @@ export async function webhookTick(env: Env): Promise<void> {
     env.CACHE.put(TICK_KEY, JSON.stringify({ at: Date.now(), ticks }), { expirationTtl: 86400 }),
   ]);
 }
+
+/** Give vault9 (Cloudflare Pages has no cron) its own 1-min trigger by pinging it. */
+export async function pingVault9(env: Env): Promise<void> {
+  const url = env.VAULT9_WEBHOOK_URL || 'https://vault9.pages.dev/api/webhook';
+  try {
+    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ source: 'cronjob-cron', at: Date.now() }) });
+  } catch { /* best-effort heartbeat */ }
+}

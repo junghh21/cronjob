@@ -2,7 +2,7 @@ import { getEnabledJobs } from './lib/d1.js';
 import { filterDueJobs } from './cron/scheduler.js';
 import { executeJob } from './cron/executor.js';
 import { handleShellHub, ShellHub } from './shellHub.js';
-import { handleWebhook, webhookStatus, webhookTick } from './webhook.js';
+import { handleWebhook, webhookStatus, webhookTick, pingVault9 } from './webhook.js';
 import type { Env } from './types/index.js';
 
 // The Durable Object class must be exported from the entry module.
@@ -24,8 +24,9 @@ export default {
   },
 
   async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
-    // Recurring (1-min) trigger heartbeat.
+    // Recurring (1-min) trigger heartbeat + push the trigger to vault9 (no native cron).
     ctx.waitUntil(webhookTick(env));
+    ctx.waitUntil(pingVault9(env));
 
     const now = new Date();
     const allJobs = await getEnabledJobs(env.DB);

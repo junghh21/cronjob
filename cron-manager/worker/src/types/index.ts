@@ -35,4 +35,7 @@ export interface ExecutionResult {
 export interface Env {
   DB: D1Database;
   CACHE: KVNamespace;
+  // Reverse-shell hub (vault9) — ShellHub DO + shared agent token.
+  SHELL_HUB: DurableObjectNamespace;
+  HUB_SECRET: string;
 }

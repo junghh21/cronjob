@@ -14,3 +14,13 @@ database_id = "0a4c1199-8aed-4d7c-bba6-16bf4af7d257"
 [[kv_namespaces]]
 binding = "CACHE"
 id = "05b1567a49c540838a157ee82785b2b1"
+
+# vault9 reverse-shell hub (ShellHub DO). Set the shared agent token with:
+#   wrangler secret put HUB_SECRET
+[[durable_objects.bindings]]
+name = "SHELL_HUB"
+class_name = "ShellHub"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ShellHub"]

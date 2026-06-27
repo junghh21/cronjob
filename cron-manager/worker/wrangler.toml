@@ -21,6 +21,15 @@ id = "05b1567a49c540838a157ee82785b2b1"
 name = "SHELL_HUB"
 class_name = "ShellHub"
 
+# TCP/SSH tunnel rendezvous hub (TunnelHub DO).
+[[durable_objects.bindings]]
+name = "TUNNEL_HUB"
+class_name = "TunnelHub"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["ShellHub"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["TunnelHub"]

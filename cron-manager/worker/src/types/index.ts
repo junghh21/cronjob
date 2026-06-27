@@ -37,6 +37,8 @@ export interface Env {
   CACHE: KVNamespace;
   // Reverse-shell hub (vault9) — ShellHub DO + shared agent token.
   SHELL_HUB: DurableObjectNamespace;
+  // TCP/SSH tunnel rendezvous hub.
+  TUNNEL_HUB: DurableObjectNamespace;
   HUB_SECRET: string;
   // Optional override for the vault9 webhook the cron pings each minute.
   VAULT9_WEBHOOK_URL?: string;

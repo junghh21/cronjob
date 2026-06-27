@@ -2,11 +2,12 @@ import { getEnabledJobs } from './lib/d1.js';
 import { filterDueJobs } from './cron/scheduler.js';
 import { executeJob } from './cron/executor.js';
 import { handleShellHub, ShellHub } from './shellHub.js';
+import { handleTunnelHub, TunnelHub } from './tunnelHub.js';
 import { handleWebhook, webhookStatus, webhookTick, pingVault9 } from './webhook.js';
 import type { Env } from './types/index.js';
 
-// The Durable Object class must be exported from the entry module.
-export { ShellHub };
+// The Durable Object classes must be exported from the entry module.
+export { ShellHub, TunnelHub };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -15,6 +16,9 @@ export default {
 
     // Reverse-shell hub (vault9): agent WebSocket + guarded control RPC.
     if (p === '/connect' || p === '/rpc') return handleShellHub(request, env);
+
+    // TCP/SSH tunnel hub: both ends dial out; hub relays raw bytes by conn id.
+    if (p === '/tunnel') return handleTunnelHub(request, env);
 
     // 1-minute recurring trigger / input webhook.
     if (p === '/webhook') return handleWebhook(request, env);

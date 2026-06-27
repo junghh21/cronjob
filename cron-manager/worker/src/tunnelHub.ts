@@ -68,10 +68,14 @@ export class TunnelHub {
   }
 
   private control(): WebSocket | null {
+    // Newest host socket wins (stale hibernated sockets can linger post-restart).
+    let best: WebSocket | null = null;
+    let bestT = -1;
     for (const s of this.state.getWebSockets()) {
-      if ((s.deserializeAttachment() as Att | null)?.role === 'host') return s;
+      const a = s.deserializeAttachment() as Att | null;
+      if (a?.role === 'host' && (a.connectedAt ?? 0) >= bestT) { best = s; bestT = a.connectedAt ?? 0; }
     }
-    return null;
+    return best;
   }
 
   private pairOf(att: Att): WebSocket | null {

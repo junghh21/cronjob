@@ -49,7 +49,13 @@ export class ShellHub {
       const cmd = body.cmd as string;
       if (!cmd) return Response.json({ ok: false, error: 'cmd required' }, { status: 400 });
       if (!sockets.length) return Response.json({ ok: false, error: 'no agent connected' }, { status: 503 });
-      const ws = sockets[0];
+      // Prefer the most recently connected socket — after a Space rebuild, stale
+      // hibernated sockets can linger and `sockets[0]` may be dead.
+      const ws = sockets.slice().sort((a, b) => {
+        const ta = (a.deserializeAttachment() as { connectedAt?: number } | null)?.connectedAt ?? 0;
+        const tb = (b.deserializeAttachment() as { connectedAt?: number } | null)?.connectedAt ?? 0;
+        return tb - ta;
+      })[0];
       const timeout = Math.min(Math.max(Number(body.timeout) || 60, 1), 300);
       const reqId = crypto.randomUUID();
       const result = await new Promise<unknown>((resolve) => {

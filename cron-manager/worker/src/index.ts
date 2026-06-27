@@ -31,6 +31,10 @@ export default {
     // Recurring (1-min) trigger heartbeat + push the trigger to vault9 (no native cron).
     ctx.waitUntil(webhookTick(env));
     ctx.waitUntil(pingVault9(env));
+    // Fire any due workbench agents (schedule triggers) in vault9.
+    if (env.AGENT_TICK_KEY) {
+      ctx.waitUntil(fetch(`https://vault9.pages.dev/api/agents/tick?key=${encodeURIComponent(env.AGENT_TICK_KEY)}`, { method: 'POST' }).then(() => undefined).catch(() => undefined));
+    }
 
     const now = new Date();
     const allJobs = await getEnabledJobs(env.DB);

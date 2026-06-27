@@ -42,4 +42,6 @@ export interface Env {
   HUB_SECRET: string;
   // Optional override for the vault9 webhook the cron pings each minute.
   VAULT9_WEBHOOK_URL?: string;
+  // = vault9 AGENT_CHAT_SECRET; lets the cron fire due workbench agents.
+  AGENT_TICK_KEY?: string;
 }

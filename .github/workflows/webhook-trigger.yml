@@ -1,0 +1,101 @@
+name: Webhook Trigger
+
+on:
+  repository_dispatch:
+    types:
+      - deploy-worker    # GH: Deploy Worker
+      - deploy-frontend  # GH: Deploy Frontend
+      - run-tests        # GH: Run CI Tests
+      - db-backup        # GH: Database Backup
+      - weekly-report    # GH: Weekly Report
+      - run-task         # 임의 작업 실행
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show trigger info
+        run: |
+          echo "event_type = ${{ github.event.action }}"
+          echo "payload    = ${{ toJSON(github.event.client_payload) }}"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # --- deploy-worker ---
+      - name: Install worker deps
+        if: github.event.action == 'deploy-worker'
+        working-directory: cron-manager/worker
+        run: npm ci
+
+      - name: Deploy Worker
+        if: github.event.action == 'deploy-worker'
+        working-directory: cron-manager/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
+
+      # --- deploy-frontend ---
+      - name: Install frontend deps
+        if: github.event.action == 'deploy-frontend'
+        working-directory: cron-manager/frontend
+        run: npm ci
+
+      - name: Build & Deploy Frontend
+        if: github.event.action == 'deploy-frontend'
+        working-directory: cron-manager/frontend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npm run build
+          npx wrangler pages deploy dist --project-name cron-hh
+
+      # --- run-tests ---
+      - name: Install deps for tests
+        if: github.event.action == 'run-tests'
+        working-directory: cron-manager/worker
+        run: npm ci
+
+      - name: Run type-check
+        if: github.event.action == 'run-tests'
+        working-directory: cron-manager/worker
+        run: npm run type-check
+
+      - name: Run frontend type-check
+        if: github.event.action == 'run-tests'
+        working-directory: cron-manager/frontend
+        run: |
+          npm ci
+          npm run type-check
+
+      # --- db-backup ---
+      - name: Backup D1 database
+        if: github.event.action == 'db-backup'
+        working-directory: cron-manager/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler d1 export cronjob --remote --output=backup-$(date +%Y%m%d).sql
+          echo "Backup complete: backup-$(date +%Y%m%d).sql"
+
+      # --- weekly-report ---
+      - name: Weekly report
+        if: github.event.action == 'weekly-report'
+        run: |
+          echo "Weekly report triggered"
+          echo "channel = ${{ github.event.client_payload.channel }}"
+
+      # --- run-task (generic) ---
+      - name: Run task
+        if: github.event.action == 'run-task'
+        run: |
+          echo "task = ${{ github.event.client_payload.task }}"

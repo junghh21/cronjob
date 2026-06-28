@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import Dashboard from './components/Dashboard';
 import JobList from './components/JobList';
 import JobEditor from './components/JobEditor';
+import GhDispatchEditor from './components/GhDispatchEditor';
 import JobLogs from './components/JobLogs';
 
 function Nav() {
@@ -34,8 +35,10 @@ export default function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/jobs" element={<JobList />} />
           <Route path="/jobs/new" element={<JobEditor />} />
+          <Route path="/jobs/gh-new" element={<GhDispatchEditor />} />
           <Route path="/jobs/:id" element={<JobLogs />} />
           <Route path="/jobs/:id/edit" element={<JobEditor />} />
+          <Route path="/jobs/:id/gh-edit" element={<GhDispatchEditor />} />
         </Routes>
       </div>
     </BrowserRouter>

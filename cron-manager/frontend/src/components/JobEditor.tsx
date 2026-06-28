@@ -145,11 +145,15 @@ export default function JobEditor() {
           <input style={inputStyle} value={form.schedule} onChange={e => set('schedule', e.target.value)} required placeholder="* * * * *" />
           <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>{scheduleLabel}</div>
         </div>
-        {(form.method === 'POST' || form.method === 'PUT' || form.method === 'PATCH') && (
+        {form.method !== 'GET' && form.method !== 'HEAD' && (
           <div style={fieldStyle}>
             <label style={labelStyle}>Request Body</label>
             <textarea style={{ ...inputStyle, height: '100px', resize: 'vertical', fontFamily: 'monospace' }}
-              value={form.payload} onChange={e => set('payload', e.target.value)} placeholder='{"key": "value"}' />
+              value={form.payload} onChange={e => set('payload', e.target.value)}
+              placeholder={'{"event_type": "deploy-worker", "client_payload": {}}'} />
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+              Sent as the request body for {form.method}. (GET/HEAD ignore the body.)
+            </div>
           </div>
         )}
         <div style={fieldStyle}>

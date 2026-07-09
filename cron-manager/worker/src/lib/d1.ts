@@ -49,6 +49,22 @@ export async function insertExecutionLog(
       result.responseBody?.substring(0, 10000) ?? null
     )
     .run();
+
+  // RETENTION (CF D1 free tier is capped at 500MB): keep only the most recent ~10k
+  // execution_logs rows (≈7 days at one/min). daily_stats holds the long-term rollup, so
+  // the detailed per-run log can be aggressively capped. Steady-state this deletes ~1 row
+  // per insert (cheap); it can never exceed the row count above. Guarded so a retention
+  // failure never breaks the execution-logging path.
+  try {
+    await db
+      .prepare(
+        `DELETE FROM execution_logs
+           WHERE rowid < (SELECT MAX(rowid) FROM execution_logs) - 10000`
+      )
+      .run();
+  } catch {
+    /* retention is best-effort; a failure here must not fail the run log */
+  }
 }
 
 export async function upsertDailyStat(

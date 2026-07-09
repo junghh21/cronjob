@@ -3,7 +3,6 @@
 
 interface Env {
   DB: D1Database;
-  CACHE: KVNamespace;
 }
 
 // ── JSON-RPC types ──────────────────────────────────────────────────────────
